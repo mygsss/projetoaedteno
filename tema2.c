@@ -3,23 +3,100 @@
 #include <string.h>
 #define MAX 101
 
-// ATENÇÃO: O cálculo da complexidade deve incluir todo o ccódigo, inclusive a leitura do arquivo.
+// ATENï¿½ï¿½O: O cï¿½lculo da complexidade deve incluir todo o cï¿½digo, inclusive a leitura do arquivo.
 
 
 char nome_arquivo[50], aux[MAX];								// proibido alterar esta linha
 int opcao, tamanho, i, j, n, m, digrafo, matriz_adj[MAX][MAX];  // proibido alterar esta linha
-// Declare variáveis globais a partir daqui.
+// Declare variÃ¡veis globais a partir daqui.
 
 
+//Estrutura de um no na pilha
+typedef struct No{
+	int vertice;         //Armazena o numero do vertice
+	struct No* prox;     //Aponta para o proximo no
+}No;
 
-void executafuncao (){   										// É dentro desta função que o aluno deverá escrever seu código
-int x = 0;
-if (!x) {
-printf ("deu certo");
+No* pilha = NULL;        //Ponteiro que representa o topo da pilha
+
+//Funcao inserir
+No* push(No* pilha, int vertice){
+
+	No* novo = (No*) malloc(sizeof(No));
+	 
+	//Verifica se a alocacao de memoria foi realizada
+	if(novo == NULL){
+		printf("\nErro de alocacao\n");
+		return pilha;
+	}
+
+	//Armazena o vertice no novo no
+	novo->vertice = vertice;
+
+	//Faz o novo no apontar para o antigo topo
+	novo->prox = pilha;
+
+	//Atualiza o topo
+	pilha = novo;
+	
+	return pilha ;
+}
+
+//Funcao remover
+No* pop(No*pilha){
+
+	//Verifica se a pilha esta vazia
+	if(pilha == NULL){
+		printf("\nPilha vazia\n");
+		return NULL;
+	}
+	
+	//Guarda o endereco do no que vai ser removido
+	No* aux = pilha;
+	
+	//Atualiza o topo para o proximo no
+	pilha = aux->prox;
+	
+	//Libera a memoria do no removido
+	free(aux);
+	
+	return pilha;
+}
+
+//Funcao para consultar o topo da pilha
+int peek(No* pilha){
+
+	//Verifica se a pilha esta vazia
+	if(pilha == NULL){
+		printf("\nPilha vazia\n");
+		return -1;
+	}
+	
+	//Acessa o valor armazenado no no que esta no topo
+	return pilha->vertice;
+}
+
+//Funcao para exibir todos os elementos da pilha
+void exibirPilha(No* pilha){
+	
+	//Cria um ponteiro auxiliar para percorrer a pilha
+	No* aux = pilha; 
+	
+	//Percorre ate achar o final da lista(NULL)
+	while(aux != NULL){
+
+		//Exibe o vertice armazenado no no atual
+		printf("%d\n", aux->vertice);
+		
+		//Vai para o proximo no
+		aux = aux->prox;
+	}
+	
 }
 
 
-
+void executafuncao (){   										// ï¿½ dentro desta funï¿½ï¿½o que o aluno deverï¿½ escrever seu cï¿½digo
+	
 }
 
 
@@ -49,7 +126,7 @@ int main() {
                 }
                 fclose(arquivo);
                 
-                printf ("\n --------------------------- MATRIZ DE ADJACÊNCIA ---------------------------\n");
+                printf ("\n --------------------------- MATRIZ DE ADJACï¿½NCIA ---------------------------\n");
                 
                 if((arquivo = fopen(nome_arquivo,"r")) != NULL){
                     printf("\n");
@@ -67,7 +144,7 @@ int main() {
                 for(int i = 1; i <= tamanho; i++){
                     for(int j = 1; j <= tamanho; j++){
 						if (matriz_adj[i][j] != matriz_adj[j][i]) {
-							digrafo = 1;   // é dígrafo
+							digrafo = 1;   // ï¿½ dï¿½grafo
 						}
 					}
 				}
