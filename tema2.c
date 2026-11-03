@@ -3,23 +3,106 @@
 #include <string.h>
 #define MAX 101
 
-// ATEN«√O: O c·lculo da complexidade deve incluir todo o ccÛdigo, inclusive a leitura do arquivo.
+// ATEN√á√ÉO: O c√°lculo da complexidade deve incluir todo o cc√≥digo, inclusive a leitura do arquivo.
 
 
 char nome_arquivo[50], aux[MAX];								// proibido alterar esta linha
 int opcao, tamanho, i, j, n, m, digrafo, matriz_adj[MAX][MAX];  // proibido alterar esta linha
-// Declare vari·veis globais a partir daqui.
+// Declare vari√°veis globais a partir daqui.
+typedef struct{
+    int dados[MAX];
+    int inicio;
+    int fim;
+}Fila;
 
+Fila fila_dfs;  //Variavel global da fila
 
+//Funcao para inicializar a fila e garantir q o inicio e o fim sejam 0
+void inicializar_fila(Fila *f){
+    f -> inicio = 0;
+    f -> fim = 0;
+}
 
-void executafuncao (){   										// … dentro desta funÁ„o que o aluno dever· escrever seu cÛdigo
+//Funcao para verificar se a fila esta vazia
+int fila_vazia(Fila *f){
+    return (f -> inicio == f -> fim);
+}
+
+//Funcao para inserir elemento no final da fila (enqueue)
+void enfileirar(Fila *f, int valor){
+    if(f -> fim < MAX){
+        f -> dados[f -> fim] = valor;
+        f -> fim++;
+    }else{
+        printf("Erro: A fila esta cheia.\n");
+    }
+}
+
+//Funcao para retirar elemento do inicio da fila (dequeue)
+int desenfileirar(Fila *f){
+    if(fila_vazia(f)){
+        printf("Erro: A fila esta vazia.\n");
+        return -1;
+    }
+    int valor = f -> dados[f -> inicio];
+    f -> inicio++;
+    return valor;
+}
+
+//Funcao para exibir todos os elementos presentes na fila
+void mostrar_fila(Fila *f){
+    if(fila_vazia(f)){
+        printf("A fila esta vazia.\n");
+        return;
+    }
+    printf("Conteudo da fila: ");
+    for(int k = f -> inicio; k < f -> fim; k++){
+        printf("%d", f -> dados[k]);
+    }
+    printf("\n");
+}
+
+void executafuncao (){   										// √â dentro desta fun√ß√£o que o aluno dever√° escrever seu c√≥digo
 int x = 0;
 if (!x) {
 printf ("deu certo");
 }
+int opcao_fila = -1;
+    int valor;
 
+    inicializar_fila(&fila_dfs);
 
+    while (opcao_fila != 0) {
+        printf("\n\n--- TESTE ISOLADO DA FILA ---\n");
+        printf("1. Inserir na fila (Enqueue)\n");
+        printf("2. Remover da fila (Dequeue)\n");
+        printf("3. Mostrar fila inteira\n");
+        printf("0. Concluir teste\n");
+        printf("Escolha: ");
+        scanf("%d", &opcao_fila);
 
+        switch (opcao_fila) {
+            case 1:
+                printf("Digite o valor para enfileirar: ");
+                scanf("%d", &valor);
+                enfileirar(&fila_dfs, valor);
+                break;
+            case 2:
+                valor = desenfileirar(&fila_dfs);
+                if (valor != -1) {
+                    printf("Sucesso: Vertice %d removido.\n", valor);
+                }
+                break;
+            case 3:
+                mostrar_fila(&fila_dfs);
+                break;
+            case 0:
+                printf("Encerrando painel de testes...\n");
+                break;
+            default:
+                printf("Opcao invalida.\n");
+        }
+    }
 }
 
 
@@ -49,7 +132,7 @@ int main() {
                 }
                 fclose(arquivo);
                 
-                printf ("\n --------------------------- MATRIZ DE ADJAC NCIA ---------------------------\n");
+                printf ("\n --------------------------- MATRIZ DE ADJAC√äNCIA ---------------------------\n");
                 
                 if((arquivo = fopen(nome_arquivo,"r")) != NULL){
                     printf("\n");
@@ -67,7 +150,7 @@ int main() {
                 for(int i = 1; i <= tamanho; i++){
                     for(int j = 1; j <= tamanho; j++){
 						if (matriz_adj[i][j] != matriz_adj[j][i]) {
-							digrafo = 1;   // È dÌgrafo
+							digrafo = 1;   // √© d√≠grafo
 						}
 					}
 				}
