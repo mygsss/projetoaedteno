@@ -10,8 +10,173 @@ char nome_arquivo[50], aux[MAX];								// proibido alterar esta linha
 int opcao, tamanho, i, j, n, m, digrafo, matriz_adj[MAX][MAX];  // proibido alterar esta linha
 // Declare vari�veis globais a partir daqui.
 
+//Variaveis globais da DFS
+int visitados[MAX];
+int ordem_visita[MAX];
+int cont_dfs = 0;
+
+//Estrutura da pilha
+typedef struct No {
+	int vertice;         //Armazena o numero do vertice
+	struct No* prox;     //Aponta para o proximo no
+}No;
+
+No* pilha = NULL;        //Ponteiro que representa o topo da pilha
+
+//Funcao inserir da pilha
+No* push(No* pilha, int vertice){
+
+	No* novo = (No*) malloc(sizeof(No));
+	 
+	//Verifica se a alocacao de memoria foi realizada
+	if(novo == NULL){
+		printf("\nErro de alocacao\n");
+		return pilha;
+	}
+
+	//Armazena o vertice no novo no
+	novo->vertice = vertice;
+
+	//Faz o novo no apontar para o antigo topo
+	novo->prox = pilha;
+
+	//Atualiza o topo
+	pilha = novo;
+	
+	return pilha ;
+}
+
+//Funcao remover da pilha
+No* pop(No*pilha){
+
+	//Verifica se a pilha esta vazia
+	if(pilha == NULL){
+		printf("\nPilha vazia\n");
+		return NULL;
+	}
+	
+	//Guarda o endereco do no que vai ser removido
+	No* aux = pilha;
+	
+	//Atualiza o topo para o proximo no
+	pilha = aux->prox;
+	
+	//Libera a memoria do no removido
+	free(aux);
+	
+	return pilha;
+}
+
+//Funcao para consultar o topo da pilha
+int peek(No* pilha){
+
+	//Verifica se a pilha esta vazia
+	if(pilha == NULL){
+		printf("\nPilha vazia\n");
+		return -1;
+	}
+	
+	//Acessa o valor armazenado no no que esta no topo
+	return pilha->vertice;
+}
+
+//Funcao para exibir todos os elementos da pilha
+void exibirPilha(No* pilha){
+	
+	//Cria um ponteiro auxiliar para percorrer a pilha
+	No* aux = pilha; 
+	
+	if(aux == NULL){
+		printf("\nPilha vazia!\n");
+		return;
+	}
+
+	printf("\n==== Elementos da pilha ====\n");
+
+	//Percorre ate achar o final da lista(NULL)
+	while(aux != NULL){
+
+		//Exibe o vertice armazenado no no atual
+		printf("%d\n", aux->vertice);
+		
+		//Vai para o proximo no
+		aux = aux->prox;
+	}
+	
+}
+
+//Funcao recursiva da busca em profundidade
+void fazer_dfs(int vertice){
+	int k;
+	visitados[vertice] = 1;
+	ordem_visita[cont_dfs] = vertice;
+	cont_dfs++;
+
+	//Percorre os vertices adjacentes
+	for(k = 1; k <= n; k++){
+	if(matriz_adj[vertice][k] == 1 && visitados[k] == 0){
+		fazer_dfs(k); // chama a funcao recursiva 
+	}
+  }
+}
+
+
+typedef struct{
+    int dados[MAX];
+    int inicio;
+    int fim;
+}Fila;
+
+Fila fila_dfs;  //Variavel global da fila
+
+//Funcao para inicializar a fila e garantir q o inicio e o fim sejam 0
+void inicializar_fila(Fila *f){
+    f -> inicio = 0;
+    f -> fim = 0;
+}
+
+//Funcao para verificar se a fila esta vazia
+int fila_vazia(Fila *f){
+    return (f -> inicio == f -> fim);
+}
+
+//Funcao para inserir elemento no final da fila (enqueue)
+void enfileirar(Fila *f, int valor){
+    if(f -> fim < MAX){
+        f -> dados[f -> fim] = valor;
+        f -> fim++;
+    }else{
+        printf("Erro: A fila esta cheia.\n");
+    }
+}
+
+//Funcao para retirar elemento do inicio da fila (dequeue)
+int desenfileirar(Fila *f){
+    if(fila_vazia(f)){
+        printf("Erro: A fila esta vazia.\n");
+        return -1;
+    }
+    int valor = f -> dados[f -> inicio];
+    f -> inicio++;
+    return valor;
+}
+
+//Funcao para exibir todos os elementos presentes na fila
+void mostrar_fila(Fila *f){
+    if(fila_vazia(f)){
+        printf("A fila esta vazia.\n");
+        return;
+    }
+    printf("Conteudo da fila: ");
+    for(int k = f -> inicio; k < f -> fim; k++){
+        printf("%d", f -> dados[k]);
+    }
+    printf("\n");
+}
+
 void menu_pilha(){ // Esta função serve para executar o menu de opções da pilha, onde podemos inserir, remover e mostrar os elementos.
     int escolha = -1;
+    int valor;
     while(escolha !=0){
         printf("escolha uma opção:\n");
         printf("1 - Inserir elemento na pilha\n");
@@ -21,14 +186,24 @@ void menu_pilha(){ // Esta função serve para executar o menu de opções da pi
         scanf("%d", &escolha);
         switch(escolha){
             case 1:
-                printf("Você escolheu inserir elemento na pilha\n");
-                break;
+             printf("Digite o valor: ");
+             scanf("%d", &valor);
+             if (valor >= 1) {                  // ajustar conforme o professor responder
+                pilha = push(pilha, valor);
+              } else {
+             printf("Valor invalido\n");
+          }
+             break;
             case 2:
-                printf("Você escolheu remover elemento da pilha\n");
-                break;
-            case 3:
-                printf("Você escolheu mostrar elementos da pilha\n");
-                break;
+    valor = peek(pilha);               // le o topo antes de remover
+    if (valor != -1) {
+        pilha = pop(pilha);
+        printf("Removido: %d\n", valor);
+    }
+    break;
+           case 3:
+    exibirPilha(pilha);
+    break;
             case 0:
                 printf("Voltando...\n");
                 break;
@@ -41,6 +216,7 @@ void menu_pilha(){ // Esta função serve para executar o menu de opções da pi
 
 void menu_fila(){ // Esta função serve para rodar o menu de opções da fila, onde podemos inserir, remover e mostrar os elementos.
     int escolha = -1;
+    int valor;
     while(escolha !=0){    //O While 
         printf("escolha uma opção:\n");
         printf("1 - Inserir elemento na fila\n");
@@ -49,15 +225,24 @@ void menu_fila(){ // Esta função serve para rodar o menu de opções da fila, 
         printf("0 - Voltar\n");
         scanf("%d", &escolha);
         switch(escolha){
-            case 1:
-                printf("Você escolheu inserir elemento na fila\n");
-                break;
+           case 1:
+    printf("Digite o valor: ");
+    scanf("%d", &valor);
+    if (valor >= 1) {
+        enfileirar(&fila_dfs, valor);
+    } else {
+        printf("Valor invalido\n");
+    }
+    break;
             case 2:
-                printf("Você escolheu remover elemento da fila\n");
-                break;
+    valor = desenfileirar(&fila_dfs);
+    if (valor != -1) {
+        printf("Removido: %d\n", valor);
+    }
+    break;
             case 3:
-                printf("Você escolheu mostrar elementos da fila\n");
-                break;
+    mostrar_fila(&fila_dfs);
+    break;
             case 0:
                 printf("Voltando...\n");
                 break;
@@ -96,10 +281,39 @@ void menu_principal(){ // Esta função serve para rodar o menu de escolhas entr
 
 
 void executafuncao (){   										// � dentro desta fun��o que o aluno dever� escrever seu c�digo
-if(tamanho==0){
+
+    int k;
+
+    if(tamanho==0){
     return;
 }
 
+for(k = 1; k <= n; k++){
+    visitados[k] = 0;
+}
+cont_dfs = 0;
+
+while(pilha!=NULL){
+    pilha = pop(pilha);
+}
+inicializar_fila(&fila_dfs);
+
+for(k = 1; k<= n; k++){
+    if(visitados [k]==0){
+        fazer_dfs(k);
+    }
+}
+
+printf("\n=== Ordem de visita ===\n");
+for(k = 0; k < cont_dfs; k++){
+    printf("%d ", ordem_visita[k]);
+}
+printf("\n");
+
+for(k=0; k<cont_dfs; k++){
+    pilha = push(pilha, ordem_visita[k]);
+    enfileirar(&fila_dfs, ordem_visita[k]);
+}
 menu_principal();
 
 }
