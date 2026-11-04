@@ -10,16 +10,20 @@ char nome_arquivo[50], aux[MAX];								// proibido alterar esta linha
 int opcao, tamanho, i, j, n, m, digrafo, matriz_adj[MAX][MAX];  // proibido alterar esta linha
 // Declare variáveis globais a partir daqui.
 
+//Variaveis globais da DFS
+int visitados[MAX];
+int ordem_visita[MAX];
+int cont_dfs = 0;
 
-//Estrutura de um no na pilha
-typedef struct No{
+//Estrutura da pilha
+typedef struct No {
 	int vertice;         //Armazena o numero do vertice
 	struct No* prox;     //Aponta para o proximo no
 }No;
 
 No* pilha = NULL;        //Ponteiro que representa o topo da pilha
 
-//Funcao inserir
+//Funcao inserir da pilha
 No* push(No* pilha, int vertice){
 
 	No* novo = (No*) malloc(sizeof(No));
@@ -42,7 +46,7 @@ No* push(No* pilha, int vertice){
 	return pilha ;
 }
 
-//Funcao remover
+//Funcao remover da pilha
 No* pop(No*pilha){
 
 	//Verifica se a pilha esta vazia
@@ -82,6 +86,13 @@ void exibirPilha(No* pilha){
 	//Cria um ponteiro auxiliar para percorrer a pilha
 	No* aux = pilha; 
 	
+	if(aux == NULL){
+		printf("\nPilha vazia!\n");
+		return;
+	}
+
+	printf("\n==== Elementos da pilha ====\n");
+
 	//Percorre ate achar o final da lista(NULL)
 	while(aux != NULL){
 
@@ -94,10 +105,53 @@ void exibirPilha(No* pilha){
 	
 }
 
+//Funcao recursiva da busca em profundidade
+void fazer_dfs(int vertice){
+	int k;
+	visitados[vertice] = 1;
+	ordem_visita[cont_dfs] = vertice;
+	cont_dfs++;
+
+	//Percorre os vertices adjacentes
+	for(k = 1; k <= n; k++){
+	if(matriz_adj[vertice][k] == 1 && visitados[k] == 0){
+		fazer_dfs(k); // chama a funcao recursiva 
+	}
+  }
+}
+
 
 void executafuncao (){   										// � dentro desta fun��o que o aluno dever� escrever seu c�digo
+	int k;
+	// Zera os vetores 
+	for (k = 1; k <= n; k++){
+		visitados[k] = 0;
+	} 
 	
+	cont_dfs = 0;
+
+	// Chama a busca em profundidade 
+	for (k = 1; k<= n; k++){
+		if(visitados [k]==0){
+			fazer_dfs(k);
+		}
+	}
+
+	printf("\n=== Ordem de visita ===\n");
+
+	for(k = 0; k < cont_dfs; k++){
+		printf("%d", ordem_visita[k]);
+	}
+
+	//Insere os vertices visitados na pilha
+	for(k=0; k<cont_dfs; k++){
+		pilha = push(pilha, ordem_visita[k]);
+	}
+	
+	//Exibe a pilha
+	exibirPilha();
 }
+
 
 
 int main() {
