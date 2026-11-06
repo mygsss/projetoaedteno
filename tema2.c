@@ -3,17 +3,32 @@
 #include <string.h>
 #define MAX 101
 
-// ATEN��O: O c�lculo da complexidade deve incluir todo o c�digo, inclusive a leitura do arquivo.
+// ATEN��O: O c�lculo da complexidade deve incluir todo o cc�digo, inclusive a leitura do arquivo.
 
 
 char nome_arquivo[50], aux[MAX];								// proibido alterar esta linha
 int opcao, tamanho, i, j, n, m, digrafo, matriz_adj[MAX][MAX];  // proibido alterar esta linha
-// Declare variáveis globais a partir daqui.
+// Declare vari�veis globais a partir daqui.
 
 //Variaveis globais da DFS
 int visitados[MAX];
 int ordem_visita[MAX];
 int cont_dfs = 0;
+
+//Funcao recursiva da busca em profundidade
+void fazer_dfs(int vertice){
+	int k;
+	visitados[vertice] = 1;
+	ordem_visita[cont_dfs] = vertice;
+	cont_dfs++;
+
+	//Percorre os vertices adjacentes
+	for(k = 1; k <= n; k++){
+	if(matriz_adj[vertice][k] == 1 && visitados[k] == 0){
+		fazer_dfs(k); // chama a funcao recursiva 
+	}
+  }
+}
 
 //Estrutura da pilha
 typedef struct No {
@@ -91,68 +106,230 @@ void exibirPilha(No* pilha){
 		return;
 	}
 
-	printf("\n==== Elementos da pilha ====\n");
+	printf("\n==== Elementos da pilha ====\n\n");
 
 	//Percorre ate achar o final da lista(NULL)
 	while(aux != NULL){
 
 		//Exibe o vertice armazenado no no atual
-		printf("%d\n", aux->vertice);
+		printf("            %d\n", aux->vertice);
 		
 		//Vai para o proximo no
 		aux = aux->prox;
 	}
-	
 }
 
-//Funcao recursiva da busca em profundidade
-void fazer_dfs(int vertice){
-	int k;
-	visitados[vertice] = 1;
-	ordem_visita[cont_dfs] = vertice;
-	cont_dfs++;
+//Estrutura da fila
+typedef struct{
+    int dados[MAX];
+    int inicio;
+    int fim;
+}Fila;
 
-	//Percorre os vertices adjacentes
-	for(k = 1; k <= n; k++){
-	if(matriz_adj[vertice][k] == 1 && visitados[k] == 0){
-		fazer_dfs(k); // chama a funcao recursiva 
-	}
+Fila fila_dfs;  //Variavel global da fila
+
+//Funcao para inicializar a fila e garantir q o inicio e o fim sejam 0
+void inicializar_fila(Fila *f){
+    f -> inicio = 0;
+    f -> fim = 0;
+}
+
+//Funcao para verificar se a fila esta vazia
+int fila_vazia(Fila *f){
+    return (f -> inicio == f -> fim);
+}
+
+//Funcao para inserir elemento no final da fila (enqueue)
+void enfileirar(Fila *f, int valor){
+    if(f -> fim < MAX){
+        f -> dados[f -> fim] = valor;
+        f -> fim++;
+    }else{
+        printf("Erro: A fila esta cheia.\n");
+    }
+}
+
+//Funcao para retirar elemento do inicio da fila (dequeue)
+int desenfileirar(Fila *f){
+    if(fila_vazia(f)){
+        printf("Erro: A fila esta vazia.\n");
+        return -1;
+    }
+    int valor = f -> dados[f -> inicio];
+    f -> inicio++;
+    return valor;
+}
+
+//Funcao para exibir todos os elementos presentes na fila
+void mostrar_fila(Fila *f){
+    if(fila_vazia(f)){
+        printf("A fila esta vazia.\n");
+        return;
+    }
+    printf("\n===== Elementos da fila =====\n\n");
+    for(int k = f -> inicio; k < f -> fim; k++){
+        printf("   %d   ", f -> dados[k]);
+    }
+    printf("\n");
+}
+
+void menu_pilha(){ // Esta funcao serve para executar o menu de opcoes da pilha, onde podemos inserir, remover e mostrar os elementos.
+    int escolha = -1;
+    int valor;
+    while(escolha !=0){
+        printf("\nEscolha uma opcao:\n\n");
+        printf("1 - Inserir elemento na pilha\n");
+        printf("2 - Remover elemento da pilha\n");
+        printf("3 - Mostrar elementos da pilha\n");
+        printf("0 - Voltar\n\n");
+        scanf("%d", &escolha);
+        switch(escolha){
+            case 1:
+             	printf("\nDigite o valor: ");
+             	scanf("%d", &valor);
+             	if (valor >= 1) {                  // ajustar conforme o professor responder
+                	pilha = push(pilha, valor);
+             	} else {
+            		printf("\nValor invalido\n");
+          		}
+           		break;
+             
+            case 2:
+    			valor = peek(pilha);               // le o topo antes de remover
+    			if (valor != -1) {
+       				pilha = pop(pilha);
+       				printf("\nRemovido: %d\n", valor);
+    				}
+   				break;
+   				
+           case 3:
+    			exibirPilha(pilha);
+   				break;
+   				
+            case 0:
+                printf("\nVoltando...\n");
+                break;
+                
+            default:
+                printf("\nOpcao invalida.\n");
+        }
+
+    }
+}
+
+void menu_fila(){ // Esta funcao serve para rodar o menu de opcoes da fila, onde podemos inserir, remover e mostrar os elementos.
+    int escolha = -1;
+    int valor;
+    while(escolha !=0){    //O While 
+        printf("\nEscolha uma opcao:\n\n");
+        printf("1 - Inserir elemento na fila\n");
+        printf("2 - Remover elemento da fila\n");
+        printf("3 - Mostrar elementos da fila\n");
+        printf("0 - Voltar\n\n");
+        scanf("%d", &escolha);
+        
+        switch(escolha){
+           case 1:
+   				printf("\nDigite o valor: ");
+    			scanf("%d", &valor);
+  				if (valor >= 1) {
+       				enfileirar(&fila_dfs, valor);
+    			} else {
+        			printf("\nValor invalido\n");
+    			}
+  				break;
+  				
+            case 2:
+   				valor = desenfileirar(&fila_dfs);
+    			if (valor != -1) {
+    	    		printf("\nRemovido: %d\n", valor);
+    			}
+   				break;
+   				
+            case 3:
+    			mostrar_fila(&fila_dfs);
+   				break;
+   				
+            case 0:
+                printf("\nVoltando...\n");
+                break;
+                
+            default:
+                printf("\nOpcao invalida.\n");
+        }
+
+    }
+}
+
+void menu_principal(){ // Esta funcao serve para rodar o menu de escolhas entre pilha, fila e sair do programa.
+    int escolha = -1;
+    while (escolha !=0){
+
+        printf("\n\nEscolha uma opcao\n\n");
+        printf("1 - Pilha\n");
+        printf("2 - Fila\n");
+        printf("0 - Sair\n\n");
+        scanf("%d", &escolha);
+
+        switch(escolha){
+        	case 1:
+            	menu_pilha();
+           		break;
+           		
+        	case 2:
+            	menu_fila();
+            	break;
+            	
+        	case 0:
+           		printf("\nSaindo...\n");
+            	break;
+            	
+       		default:
+            	printf("\nOpcao invalida.\n");
+    }
   }
 }
 
 
-void executafuncao (){   										// � dentro desta fun��o que o aluno dever� escrever seu c�digo
-	int k;
-	// Zera os vetores 
-	for (k = 1; k <= n; k++){
-		visitados[k] = 0;
-	} 
-	
-	cont_dfs = 0;
+void executafuncao (){   										
 
-	// Chama a busca em profundidade 
-	for (k = 1; k<= n; k++){
-		if(visitados [k]==0){
-			fazer_dfs(k);
-		}
+    int k;
+
+    if(tamanho==0){
+    	return;
 	}
 
-	printf("\n=== Ordem de visita ===\n");
+	for(k = 1; k <= n; k++){
+    	visitados[k] = 0;
+	}
 
+    cont_dfs = 0;
+
+	while(pilha!=NULL){
+    	pilha = pop(pilha);
+	}
+		
+	inicializar_fila(&fila_dfs);
+
+	for(k = 1; k<= n; k++){
+   		if(visitados [k]==0){
+        	fazer_dfs(k);
+    	}
+	}			
+	printf("-------  ORDEM DE VISITA -------\n\n");
+	
 	for(k = 0; k < cont_dfs; k++){
-		printf("%d", ordem_visita[k]);
+    	printf("  %d  ", ordem_visita[k]);
 	}
+	printf("\n");
 
-	//Insere os vertices visitados na pilha
 	for(k=0; k<cont_dfs; k++){
-		pilha = push(pilha, ordem_visita[k]);
+    	pilha = push(pilha, ordem_visita[k]);
+    	enfileirar(&fila_dfs, ordem_visita[k]);
 	}
 	
-	//Exibe a pilha
-	exibirPilha();
+	menu_principal();
 }
-
-
 
 int main() {
 	opcao = 1;
@@ -185,6 +362,7 @@ int main() {
                 if((arquivo = fopen(nome_arquivo,"r")) != NULL){
                     printf("\n");
                     for(int i = 1; i <= tamanho; i++){
+
                         for(int j = 1; j <= tamanho; j++){
                             fscanf(arquivo, "%d", &matriz_adj[i][j]);
 							printf("%3d ", matriz_adj[i][j]); 
@@ -195,7 +373,7 @@ int main() {
                 fclose(arquivo);
 				n = tamanho;
 				
-                for(int i = 1; i <= tamanho; i++){
+                for(int i = 1; i <= tamanho; i++){  
                     for(int j = 1; j <= tamanho; j++){
 						if (matriz_adj[i][j] != matriz_adj[j][i]) {
 							digrafo = 1;   // � d�grafo
