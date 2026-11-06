@@ -169,7 +169,7 @@ void mostrar_fila(Fila *f){
     }
     printf("Conteudo da fila: ");
     for(int k = f -> inicio; k < f -> fim; k++){
-        printf("%d", f -> dados[k]);
+        printf("%d ", f -> dados[k]);
     }
     printf("\n");
 }
