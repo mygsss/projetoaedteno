@@ -94,7 +94,7 @@ void exibirPilha(No* pilha){
 	printf("\n==== Elementos da pilha ====\n");
 
 	//Percorre ate achar o final da lista(NULL)
-	while(aux != NULL){
+	while(aux != NULL){  //estrutura de repeticao (complexidade O(N))
 
 		//Exibe o vertice armazenado no no atual
 		printf("%d\n", aux->vertice);
@@ -113,63 +113,88 @@ void fazer_dfs(int vertice){
 	cont_dfs++;
 
 	//Percorre os vertices adjacentes
-	for(k = 1; k <= n; k++){
+	for(k = 1; k <= n; k++){  //estrutura de repeticao (complexidade: O(N))
 	if(matriz_adj[vertice][k] == 1 && visitados[k] == 0){
 		fazer_dfs(k); // chama a funcao recursiva 
 	}
   }
 }
 
+// Estrutura da fila
+typedef struct Fila {
+    int vertice;
+    struct Fila *prox;
+} Fila;
 
-typedef struct{
-    int dados[MAX];
-    int inicio;
-    int fim;
-}Fila;
+Fila *fila_dfs = NULL; // Ponteiro para o início da fila
 
-Fila fila_dfs;  //Variavel global da fila
-
-//Funcao para inicializar a fila e garantir q o inicio e o fim sejam 0
-void inicializar_fila(Fila *f){
-    f -> inicio = 0;
-    f -> fim = 0;
-}
-
-//Funcao para verificar se a fila esta vazia
-int fila_vazia(Fila *f){
-    return (f -> inicio == f -> fim);
-}
-
-//Funcao para inserir elemento no final da fila (enqueue)
-void enfileirar(Fila *f, int valor){
-    if(f -> fim < MAX){
-        f -> dados[f -> fim] = valor;
-        f -> fim++;
-    }else{
-        printf("Erro: A fila esta cheia.\n");
+// Inserindo na fila
+Fila *enqueue(Fila *fila, int valor) {
+    Fila *novo = (Fila *) malloc(sizeof(Fila));
+    
+    if (novo == NULL) {
+        printf("Erro de alocacao!\n");
+        return fila;
     }
-}
-
-//Funcao para retirar elemento do inicio da fila (dequeue)
-int desenfileirar(Fila *f){
-    if(fila_vazia(f)){
-        printf("Erro: A fila esta vazia.\n");
-        return -1;
+    
+    novo->vertice = valor;
+    novo->prox = NULL;
+    
+    // Se a fila estiver vazia
+    if (fila == NULL) {
+        return novo;
     }
-    int valor = f -> dados[f -> inicio];
-    f -> inicio++;
-    return valor;
+    
+    // Percorre até o último elemento
+    Fila *aux = fila;
+    while(aux->prox != NULL) {  // estrutura de repeticao (complexidade: O(N))
+        aux = aux->prox;
+    }
+    
+    aux->prox = novo;
+    return fila;
 }
 
-//Funcao para exibir todos os elementos presentes na fila
-void mostrar_fila(Fila *f){
-    if(fila_vazia(f)){
-        printf("A fila esta vazia.\n");
+// Removendo da fila
+Fila *dequeue(Fila *fila) {
+    if(fila == NULL) {
+        printf("Fila vazia!\n");
+        return NULL;
+    }
+    
+    Fila *aux = fila;
+    fila = fila->prox;
+    free(aux);
+    
+    return fila;
+}
+
+// Consultando o topo
+void front(Fila *fila) {
+    if(fila == NULL) {
+        printf("Fila vazia!\n");
         return;
     }
+    printf("\n===== PRIMEIRO DA FILA =====\n");
+    printf("Vertice : %d\n", fila->vertice);
+}
+
+// Verificando se a fila está vazia
+int isEmpty(Fila *fila) {
+    return (fila == NULL);
+}
+
+// Função auxiliar para mostrar a fila inteira
+void mostrarFila(Fila *fila) {
+    if(fila == NULL) {
+        printf("Fila vazia!\n");
+        return;
+    }
+    Fila *aux = fila;
     printf("Conteudo da fila: ");
-    for(int k = f -> inicio; k < f -> fim; k++){
-        printf("%d ", f -> dados[k]);
+    while(aux != NULL) {  //estrutura de repeticao (complexidade: O(N))
+        printf("%d ", aux->vertice);
+        aux = aux->prox;
     }
     printf("\n");
 }
@@ -177,7 +202,7 @@ void mostrar_fila(Fila *f){
 void menu_pilha(){ // Esta função serve para executar o menu de opções da pilha, onde podemos inserir, remover e mostrar os elementos.
     int escolha = -1;
     int valor;
-    while(escolha !=0){
+    while(escolha !=0){  //estrutura de repeticao
         printf("escolha uma opção:\n");
         printf("1 - Inserir elemento na pilha\n");
         printf("2 - Remover elemento da pilha\n");
@@ -214,48 +239,62 @@ void menu_pilha(){ // Esta função serve para executar o menu de opções da pi
     }
 }
 
-void menu_fila(){ // Esta função serve para rodar o menu de opções da fila, onde podemos inserir, remover e mostrar os elementos.
-    int escolha = -1;
+void menu_fila(){  // Funcao para executar o menu de opcoes da fila, onde podemos inserir, remover, mostrar e verificar se a fila esta vazia.
+    int opcao = -1;
     int valor;
-    while(escolha !=0){    //O While 
-        printf("escolha uma opção:\n");
-        printf("1 - Inserir elemento na fila\n");
-        printf("2 - Remover elemento da fila\n");
-        printf("3 - Mostrar elementos da fila\n");
-        printf("0 - Voltar\n");
-        scanf("%d", &escolha);
-        switch(escolha){
-           case 1:
-    printf("Digite o valor: ");
-    scanf("%d", &valor);
-    if (valor >= 1) {
-        enfileirar(&fila_dfs, valor);
-    } else {
-        printf("Valor invalido\n");
-    }
-    break;
+    
+    while(opcao != 0) {  //estrutura de repeticao
+        printf("\n===================================\n");
+        printf("           MENU DA FILA\n");
+        printf("===================================\n");
+        printf("1 - Enqueue (Inserir)\n");
+        printf("2 - Dequeue (Remover)\n");
+        printf("3 - Front (Primeiro)\n");
+        printf("4 - Mostrar fila\n");
+        printf("5 - Verificar fila vazia\n");
+        printf("0 - Sair\n");
+        printf("===================================\n");
+        printf("Opcao: ");
+        scanf("%d", &opcao);
+        
+        switch(opcao) {
+            case 1:
+                printf("Digite o valor: ");
+                scanf("%d", &valor);
+                if (valor >= 1) {
+                    fila_dfs = enqueue(fila_dfs, valor);
+                } else {
+                    printf("Valor invalido\n");
+                }
+                break;
             case 2:
-    valor = desenfileirar(&fila_dfs);
-    if (valor != -1) {
-        printf("Removido: %d\n", valor);
-    }
-    break;
+                fila_dfs = dequeue(fila_dfs);
+                break;
             case 3:
-    mostrar_fila(&fila_dfs);
-    break;
+                front(fila_dfs);
+                break;
+            case 4:
+                mostrarFila(fila_dfs);
+                break;
+            case 5:
+                if(isEmpty(fila_dfs)) {
+                    printf("\nFila vazia!\n");
+                } else {
+                    printf("\nA fila possui elementos.\n");
+                }
+                break;
             case 0:
-                printf("Voltando...\n");
+                printf("\nEncerrando...\n");
                 break;
             default:
-                printf("Opção inválida\n");
+                printf("\nOpcao invalida!\n");
         }
-
     }
 }
 
 void menu_principal(){ // Esta função serve para rodar o menu de escolhas entre pilha fila e sair do programa.
      int escolha = -1;
-    while (escolha !=0){
+    while (escolha !=0){  //estrutura de repeticao
         printf("Escolha uma opção:\n");
         printf("1 - pilha\n");
         printf("2 - fila\n");
@@ -281,6 +320,10 @@ void menu_principal(){ // Esta função serve para rodar o menu de escolhas entr
 
 
 void executafuncao (){   										// � dentro desta fun��o que o aluno dever� escrever seu c�digo
+int x = 0;
+if (!x) {
+printf ("deu certo");
+}
 
     int k;
 
@@ -288,32 +331,32 @@ void executafuncao (){   										// � dentro desta fun��o que o aluno de
     return;
 }
 
-for(k = 1; k <= n; k++){
+for(k = 1; k <= n; k++){ // estrutura de repeticao (complexidade: O(N))
     visitados[k] = 0;
 }
 cont_dfs = 0;
 
-while(pilha!=NULL){
+while(pilha!=NULL){ // estrutura de repeticao (complexidade: O(N))
     pilha = pop(pilha);
 }
-inicializar_fila(&fila_dfs);
-
-for(k = 1; k<= n; k++){
+while(!isEmpty(fila_dfs)){ // estrutura de repeticao (complexidade: O(N))
+    fila_dfs = dequeue(fila_dfs);
+}
+for(k = 1; k<= n; k++){ // estrutura de repeticao (complexidade: O(N))
     if(visitados [k]==0){
         fazer_dfs(k);
     }
 }
 
 printf("\n=== Ordem de visita ===\n");
-for(k = 0; k < cont_dfs; k++){
+for(k = 0; k < cont_dfs; k++){ // estrutura de repeticao (complexidade: O(N))
     printf("%d ", ordem_visita[k]);
 }
 printf("\n");
 
-for(k=0; k<cont_dfs; k++){
+for(k=0; k<cont_dfs; k++){ // estrutura de repeticao (complexidade: O(N))
     pilha = push(pilha, ordem_visita[k]);
-    enfileirar(&fila_dfs, ordem_visita[k]);
-}
+fila_dfs = enqueue(fila_dfs, ordem_visita[k]);}
 menu_principal();
 
 }
