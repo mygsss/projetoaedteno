@@ -15,6 +15,21 @@ int visitados[MAX];
 int ordem_visita[MAX];
 int cont_dfs = 0;
 
+//Funcao recursiva da busca em profundidade
+void fazer_dfs(int vertice){
+	int k;
+	visitados[vertice] = 1;
+	ordem_visita[cont_dfs] = vertice;
+	cont_dfs++;
+
+	//Percorre os vertices adjacentes
+	for(k = 1; k <= n; k++){ // estrutura de repeticao (complexidade: O(N))
+	if(matriz_adj[vertice][k] == 1 && visitados[k] == 0){
+		fazer_dfs(k); // chama a funcao recursiva 
+	}
+  }
+}
+
 //Estrutura da pilha
 typedef struct No {
 	int vertice;         //Armazena o numero do vertice
@@ -91,33 +106,17 @@ void exibirPilha(No* pilha){
 		return;
 	}
 
-	printf("\n==== Elementos da pilha ====\n");
+	printf("\n==== Elementos da pilha ====\n\n");
 
 	//Percorre ate achar o final da lista(NULL)
-	while(aux != NULL){  //estrutura de repeticao (complexidade O(N))
+	while(aux != NULL){ // estrutura de repeticao (complexidade: O(N))
 
 		//Exibe o vertice armazenado no no atual
-		printf("%d\n", aux->vertice);
+		printf("            %d\n", aux->vertice);
 		
 		//Vai para o proximo no
 		aux = aux->prox;
 	}
-	
-}
-
-//Funcao recursiva da busca em profundidade
-void fazer_dfs(int vertice){
-	int k;
-	visitados[vertice] = 1;
-	ordem_visita[cont_dfs] = vertice;
-	cont_dfs++;
-
-	//Percorre os vertices adjacentes
-	for(k = 1; k <= n; k++){  //estrutura de repeticao (complexidade: O(N))
-	if(matriz_adj[vertice][k] == 1 && visitados[k] == 0){
-		fazer_dfs(k); // chama a funcao recursiva 
-	}
-  }
 }
 
 // Estrutura da fila
@@ -199,41 +198,45 @@ void mostrarFila(Fila *fila) {
     printf("\n");
 }
 
-void menu_pilha(){ // Esta função serve para executar o menu de opções da pilha, onde podemos inserir, remover e mostrar os elementos.
+void menu_pilha(){ // Esta funcao serve para executar o menu de opcoes da pilha, onde podemos inserir, remover e mostrar os elementos.
     int escolha = -1;
     int valor;
     while(escolha !=0){  //estrutura de repeticao
-        printf("escolha uma opção:\n");
+        printf("\nEscolha uma opcao:\n\n");
         printf("1 - Inserir elemento na pilha\n");
         printf("2 - Remover elemento da pilha\n");
         printf("3 - Mostrar elementos da pilha\n");
-        printf("0 - Voltar\n");
+        printf("0 - Voltar\n\n");
         scanf("%d", &escolha);
         switch(escolha){
             case 1:
-             printf("Digite o valor: ");
-             scanf("%d", &valor);
-             if (valor >= 1) {                  // ajustar conforme o professor responder
-                pilha = push(pilha, valor);
-              } else {
-             printf("Valor invalido\n");
-          }
-             break;
+             	printf("\nDigite o valor: ");
+             	scanf("%d", &valor);
+             	if (valor >= 1) {                  // ajustar conforme o professor responder
+                	pilha = push(pilha, valor);
+             	} else {
+            		printf("\nValor invalido\n");
+          		}
+           		break;
+             
             case 2:
-    valor = peek(pilha);               // le o topo antes de remover
-    if (valor != -1) {
-        pilha = pop(pilha);
-        printf("Removido: %d\n", valor);
-    }
-    break;
+    			valor = peek(pilha);               // le o topo antes de remover
+    			if (valor != -1) {
+       				pilha = pop(pilha);
+       				printf("\nRemovido: %d\n", valor);
+    				}
+   				break;
+   				
            case 3:
-    exibirPilha(pilha);
-    break;
+    			exibirPilha(pilha);
+   				break;
+   				
             case 0:
-                printf("Voltando...\n");
+                printf("\nVoltando...\n");
                 break;
+                
             default:
-                printf("Opção inválida\n");
+                printf("\nOpcao invalida.\n");
         }
 
     }
@@ -292,75 +295,80 @@ void menu_fila(){  // Funcao para executar o menu de opcoes da fila, onde podemo
     }
 }
 
-void menu_principal(){ // Esta função serve para rodar o menu de escolhas entre pilha fila e sair do programa.
-     int escolha = -1;
+void menu_principal(){ // Esta funcao serve para rodar o menu de escolhas entre pilha, fila e sair do programa.
+    int escolha = -1;
     while (escolha !=0){  //estrutura de repeticao
-        printf("Escolha uma opção:\n");
-        printf("1 - pilha\n");
-        printf("2 - fila\n");
-        printf("0 - Sair\n");
+
+        printf("\n\nEscolha uma opcao\n\n");
+        printf("1 - Pilha\n");
+        printf("2 - Fila\n");
+        printf("0 - Sair\n\n");
         scanf("%d", &escolha);
 
-         switch(escolha){
-        case 1:
-            menu_pilha();
-            break;
-        case 2:
-            menu_fila();
-            break;
-        case 0:
-            printf("Saindo...\n");
-            break;
-        default:
-            printf("Opção inválida\n");
+        switch(escolha){
+        	case 1:
+            	menu_pilha();
+           		break;
+           		
+        	case 2:
+            	menu_fila();
+            	break;
+            	
+        	case 0:
+           		printf("\nSaindo...\n");
+            	break;
+            	
+       		default:
+            	printf("\nOpcao invalida.\n");
     }
   }
 }
 
 
-
-void executafuncao (){   										// � dentro desta fun��o que o aluno dever� escrever seu c�digo
-int x = 0;
-if (!x) {
-printf ("deu certo");
-}
-
+void executafuncao (){   										
+	int x = 0;
+    if (!x) {
+    printf ("deu certo");
+    }
     int k;
 
     if(tamanho==0){
-    return;
-}
+    	return;
+	}
 
-for(k = 1; k <= n; k++){ // estrutura de repeticao (complexidade: O(N))
-    visitados[k] = 0;
-}
-cont_dfs = 0;
+	for(k = 1; k <= n; k++){ // estrutura de repeticao (complexidade: O(N))
+    	visitados[k] = 0;
+	}
 
-while(pilha!=NULL){ // estrutura de repeticao (complexidade: O(N))
-    pilha = pop(pilha);
-}
-while(!isEmpty(fila_dfs)){ // estrutura de repeticao (complexidade: O(N))
+    cont_dfs = 0;
+
+	while(pilha!=NULL){ // estrutura de repeticao (complexidade: O(N))
+    	pilha = pop(pilha);
+	}
+		
+	while(!isEmpty(fila_dfs)){ // estrutura de repeticao (complexidade: O(N))
     fila_dfs = dequeue(fila_dfs);
-}
-for(k = 1; k<= n; k++){ // estrutura de repeticao (complexidade: O(N))
-    if(visitados [k]==0){
-        fazer_dfs(k);
     }
+
+	for(k = 1; k<= n; k++){ // estrutura de repeticao (complexidade: O(N))
+   		if(visitados [k]==0){
+        	fazer_dfs(k);
+    	}
+	}			
+	printf("-------  ORDEM DE VISITA -------\n\n");
+	
+	for(k = 0; k < cont_dfs; k++){ // estrutura de repeticao (complexidade: O(N))
+    	printf("  %d  ", ordem_visita[k]);
+	}
+	printf("\n");
+
+	for(k=0; k<cont_dfs; k++){  // estrutura de repeticao (complexidade: O(N))
+    	pilha = push(pilha, ordem_visita[k]);
+    	fila_dfs = enqueue(fila_dfs, ordem_visita[k]);
+	}
+	
+	menu_principal();
 }
-
-printf("\n=== Ordem de visita ===\n");
-for(k = 0; k < cont_dfs; k++){ // estrutura de repeticao (complexidade: O(N))
-    printf("%d ", ordem_visita[k]);
-}
-printf("\n");
-
-for(k=0; k<cont_dfs; k++){ // estrutura de repeticao (complexidade: O(N))
-    pilha = push(pilha, ordem_visita[k]);
-fila_dfs = enqueue(fila_dfs, ordem_visita[k]);}
-menu_principal();
-
-}
-
 
 int main() {
 	opcao = 1;
@@ -393,6 +401,7 @@ int main() {
                 if((arquivo = fopen(nome_arquivo,"r")) != NULL){
                     printf("\n");
                     for(int i = 1; i <= tamanho; i++){
+
                         for(int j = 1; j <= tamanho; j++){
                             fscanf(arquivo, "%d", &matriz_adj[i][j]);
 							printf("%3d ", matriz_adj[i][j]); 
@@ -403,7 +412,7 @@ int main() {
                 fclose(arquivo);
 				n = tamanho;
 				
-                for(int i = 1; i <= tamanho; i++){
+                for(int i = 1; i <= tamanho; i++){  
                     for(int j = 1; j <= tamanho; j++){
 						if (matriz_adj[i][j] != matriz_adj[j][i]) {
 							digrafo = 1;   // � d�grafo
