@@ -274,7 +274,13 @@ void menu_fila(){  // Funcao para executar o menu de opcoes da fila, onde podemo
                 }
                 break;
             case 2:
-                fila_dfs = dequeue(fila_dfs);
+                if (fila_dfs != NULL) {
+                    valor = fila_dfs->vertice; // Lê o primeiro da fila antes de remover
+                    fila_dfs = dequeue(fila_dfs);
+                    printf("Removido: %d\n", valor);
+                } else {
+                    printf("\nFila vazia! Nao ha elementos para remover.\n");
+                }
                 break;
             case 3:
                 front(fila_dfs);
